@@ -55,7 +55,7 @@ Rules:
 - THE DEVOTED is defined by loyalty and sacrifice for a specific person or cause — they subordinate themselves entirely to another. Key signals: "do it but remember the cost", "who you choose to stand beside", "protect what matters".
 - THE ANCHOR is defined by emotional lightness and humor as a coping mechanism — they make others feel better through levity, not loyalty. Key signals: "find absurdity", "laugh or you'll break", "connection is what matters".
 - THE DEVOTED and THE ANCHOR are different — loyalty under sacrifice = Devoted, lightness and humor = Anchor.
-- If answers contain "The only language the world speaks" AND "Become something that can survive it" together — the role is THE APOSTLE. This combination is never THE STRUGGLER.
+- If answers contain "The only language the world speaks" AND "Become something that can survive it" together AND Q4 is "Fight it with everything" — the role is THE APOSTLE. If Q4 is "Use that knowledge as a map", the PRIORITY RULE takes precedence and the role is THE DREAMER regardless of Q3 or Q5.
 - THE DREAMER is defined by calculated ambition — they use knowledge, strategy and charm to reach their dream. Key signal: Q4 "Use that knowledge as a map". If Q4 is "Use that knowledge as a map" the role is THE DREAMER not THE APOSTLE.
 
 
