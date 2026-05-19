@@ -8,6 +8,14 @@ app.use(express.json())
 const PORT = process.env.PORT || 3000
 const GROQ_API_KEY = process.env.GROQ_API_KEY
 
+const mongoose = require('mongoose')
+
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.log('MongoDB connection error:', err))
+
+const Result = require('./models/Result')
+
 app.get('/health', (req, res) => {
   res.json({ status: 'alive', project: 'berserk-sort' })
 })
@@ -74,6 +82,8 @@ Return ONLY valid JSON, no markdown, no preamble, nothing outside the object:
   console.log('GROQ RESPONSE:', JSON.stringify(data, null, 2))
   const text = data.choices[0].message.content
   const result = JSON.parse(text)
+  const savedResult = new Result(result)
+  await savedResult.save()
   res.json(result)
 })
 
