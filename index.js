@@ -20,6 +20,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'alive', project: 'berserk-sort' })
 })
 
+app.get('/results', async (req, res) => {
+  const results = await Result.find().sort({ createdAt: -1 })
+  res.json(results)
+})
+
 app.post('/sort', async (req, res) => {
   console.log('RAW BODY:', req.body)
   const { answers } = req.body
