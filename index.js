@@ -1,5 +1,19 @@
 require('dotenv').config()
 const express = require('express')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
+const User = require('./models/User')
+const authenticate = (req, res, next) => {
+const token = req.headers.authorization?.split(' ')[1]
+  if (!token) return res.status(401).json({ message: 'No token provided' })
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    req.userId = decoded.userId
+    next()
+  } catch {
+    res.status(401).json({ message: 'Invalid token' })
+  }
+}
 const app = express()
 const cors = require('cors')
 app.use(cors())
@@ -8,11 +22,42 @@ app.use(express.json())
 const PORT = process.env.PORT || 3000
 const GROQ_API_KEY = process.env.GROQ_API_KEY
 
+const mongoose = require('mongoose')
+
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.log('MongoDB connection error:', err))
+
+const Result = require('./models/Result')
+
 app.get('/health', (req, res) => {
   res.json({ status: 'alive', project: 'berserk-sort' })
 })
 
-app.post('/sort', async (req, res) => {
+app.get('/my-results', authenticate, async (req, res) => {
+  const results = await Result.find({ userId: req.userId }).sort({ createdAt: -1 })
+  res.json(results)
+})
+
+app.post('/register', async (req, res) => {
+  const { email, password } = req.body
+  const hashed = await bcrypt.hash(password, 10)
+  const user = new User({ email, password: hashed })
+  await user.save()
+  res.json({ message: 'User created successfully' })
+})
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body
+  const user = await User.findOne({ email })
+  if (!user) return res.status(401).json({ message: 'Invalid credentials' })
+  const match = await bcrypt.compare(password, user.password)
+  if (!match) return res.status(401).json({ message: 'Invalid credentials' })
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+  res.json({ token })
+})
+
+app.post('/sort', authenticate, async (req, res) => {
   console.log('RAW BODY:', req.body)
   const { answers } = req.body
 
@@ -74,6 +119,11 @@ Return ONLY valid JSON, no markdown, no preamble, nothing outside the object:
   console.log('GROQ RESPONSE:', JSON.stringify(data, null, 2))
   const text = data.choices[0].message.content
   const result = JSON.parse(text)
+  const savedResult = new Result({
+  ...result,
+  userId: req.userId
+})
+await savedResult.save()
   res.json(result)
 })
 
