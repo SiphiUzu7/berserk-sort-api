@@ -39,6 +39,14 @@ app.get('/results', async (req, res) => {
   res.json(results)
 })
 
+app.get('/stats', async (req, res) => {
+  const roleStats = await Result.aggregate([
+    { $group: { _id: '$role', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ])
+  res.json(roleStats)
+})
+
 app.get('/my-results', authenticate, async (req, res) => {
   const results = await Result.find({ userId: req.userId }).sort({ createdAt: -1 })
   res.json(results)
