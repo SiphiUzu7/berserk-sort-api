@@ -70,7 +70,7 @@ app.post('/login', async (req, res) => {
   res.json({ token })
 })
 
-app.post('/sort', authenticate, async (req, res) => {
+app.post('/sort', async (req, res) => {
   console.log('RAW BODY:', req.body)
   const { answers } = req.body
 
@@ -134,7 +134,7 @@ Return ONLY valid JSON, no markdown, no preamble, nothing outside the object:
   const result = JSON.parse(text)
   const savedResult = new Result({
   ...result,
-  userId: req.userId
+  userId: req.userId || null
 })
 await savedResult.save()
   res.json(result)
