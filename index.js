@@ -39,6 +39,14 @@ app.get('/results', async (req, res) => {
   res.json(results)
 })
 
+app.get('/stats', async (req, res) => {
+  const roleStats = await Result.aggregate([
+    { $group: { _id: '$role', count: { $sum: 1 } } },
+    { $sort: { count: -1 } }
+  ])
+  res.json(roleStats)
+})
+
 app.get('/my-results', authenticate, async (req, res) => {
   const results = await Result.find({ userId: req.userId }).sort({ createdAt: -1 })
   res.json(results)
@@ -62,7 +70,7 @@ app.post('/login', async (req, res) => {
   res.json({ token })
 })
 
-app.post('/sort', authenticate, async (req, res) => {
+app.post('/sort', async (req, res) => {
   console.log('RAW BODY:', req.body)
   const { answers } = req.body
 
@@ -126,7 +134,7 @@ Return ONLY valid JSON, no markdown, no preamble, nothing outside the object:
   const result = JSON.parse(text)
   const savedResult = new Result({
   ...result,
-  userId: req.userId
+  userId: req.userId || null
 })
 await savedResult.save()
   res.json(result)
