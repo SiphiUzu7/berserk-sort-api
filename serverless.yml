@@ -1,0 +1,23 @@
+service: berserk-sort-api
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: af-south-1
+  deploymentBucket:
+    name: berserk-sort-ui
+  environment:
+    GROQ_API_KEY: ${env:GROQ_API_KEY}
+    MONGODB_URI: ${env:MONGODB_URI}
+    JWT_SECRET: ${env:JWT_SECRET}
+
+functions:
+  app:
+    handler: lambda.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: any
+      - httpApi:
+          path: /
+          method: any
